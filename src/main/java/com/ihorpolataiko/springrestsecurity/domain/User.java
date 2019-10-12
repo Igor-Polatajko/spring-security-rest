@@ -1,5 +1,6 @@
 package com.ihorpolataiko.springrestsecurity.domain;
 
+import com.ihorpolataiko.springrestsecurity.domain.security.Token;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,13 +19,16 @@ public class User {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "user_id")
     private String id;
     private String username;
-    private String password;
+    private String passwordHash;
     private String firstName;
     private String lastName;
     @ElementCollection
     @Enumerated(EnumType.STRING)
     private List<Role> roles;
     private boolean active;
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 }

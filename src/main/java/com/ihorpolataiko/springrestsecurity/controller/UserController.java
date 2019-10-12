@@ -1,10 +1,12 @@
 package com.ihorpolataiko.springrestsecurity.controller;
 
-import com.ihorpolataiko.springrestsecurity.domain.User;
 import com.ihorpolataiko.springrestsecurity.service.UserService;
 import com.ihorpolataiko.springrestsecurity.transfer.UserDto;
+import com.ihorpolataiko.springrestsecurity.transfer.validation.ExistingRecord;
+import com.ihorpolataiko.springrestsecurity.transfer.validation.NewRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +22,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<UserDto> findAll() {
         return userService.findAll();
@@ -32,18 +34,17 @@ public class UserController {
         return userService.findById(id);
     }
 
-    @PostMapping("")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto create(@RequestBody User user) {
-        user.setId(null);
-        return userService.save(user);
+    public UserDto onboard(@Validated(NewRecord.class) @RequestBody UserDto userDto) {
+        return userService.save(userDto);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto update(@PathVariable("id") String id, @RequestBody User user) {
-        user.setId(id);
-        return userService.save(user);
+    public UserDto update(@Validated(ExistingRecord.class) @PathVariable("id") String id, @RequestBody UserDto userDto) {
+        userDto.setId(id);
+        return userService.save(userDto);
     }
 
     @DeleteMapping("/{id}")
