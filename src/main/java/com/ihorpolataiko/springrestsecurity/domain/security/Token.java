@@ -21,7 +21,7 @@ public class Token {
     @Column(name = "token_id")
     private String id;
     private String value;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "user_id")
     private User user;
 }
