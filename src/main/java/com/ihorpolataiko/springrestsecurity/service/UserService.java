@@ -1,5 +1,6 @@
 package com.ihorpolataiko.springrestsecurity.service;
 
+import com.ihorpolataiko.springrestsecurity.domain.Role;
 import com.ihorpolataiko.springrestsecurity.transfer.UserDto;
 
 import java.util.List;
@@ -10,7 +11,11 @@ public interface UserService {
 
     UserDto findById(String id);
 
-    UserDto save(UserDto userDto);
+    UserDto onboard(UserDto userDto);
+
+    UserDto update(UserDto userDto);
+
+    void setRoles(String userId, List<Role> roles);
 
     void deleteById(String id);
 }

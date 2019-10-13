@@ -1,5 +1,6 @@
 package com.ihorpolataiko.springrestsecurity.controller;
 
+import com.ihorpolataiko.springrestsecurity.domain.Role;
 import com.ihorpolataiko.springrestsecurity.service.UserService;
 import com.ihorpolataiko.springrestsecurity.transfer.UserDto;
 import com.ihorpolataiko.springrestsecurity.transfer.validation.ExistingRecord;
@@ -37,14 +38,20 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto onboard(@Validated(NewRecord.class) @RequestBody UserDto userDto) {
-        return userService.save(userDto);
+        return userService.onboard(userDto);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public UserDto update(@Validated(ExistingRecord.class) @PathVariable("id") String id, @RequestBody UserDto userDto) {
         userDto.setId(id);
-        return userService.save(userDto);
+        return userService.update(userDto);
+    }
+
+    @PostMapping("/{id}/roles")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void setRoles(@PathVariable("id") String id, @RequestBody List<Role> roles) {
+        userService.setRoles(id, roles);
     }
 
     @DeleteMapping("/{id}")

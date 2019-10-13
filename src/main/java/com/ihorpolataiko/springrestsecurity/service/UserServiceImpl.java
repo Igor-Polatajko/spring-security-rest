@@ -1,5 +1,6 @@
 package com.ihorpolataiko.springrestsecurity.service;
 
+import com.ihorpolataiko.springrestsecurity.domain.Role;
 import com.ihorpolataiko.springrestsecurity.domain.User;
 import com.ihorpolataiko.springrestsecurity.repository.UserRepository;
 import com.ihorpolataiko.springrestsecurity.transfer.UserDto;
@@ -38,22 +39,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto save(UserDto userDto) {
+    public UserDto onboard(UserDto userDto) {
         User user = toUser(userDto);
-        if (user.getId() == null) {
-            userRepository.findByUsername(user.getUsername())
-                    .ifPresent(userWithUsername -> {
-                        throw new IllegalArgumentException("Username already in use");
-                    });
+        userRepository.findByUsername(user.getUsername())
+                .ifPresent(userWithUsername -> {
+                    throw new IllegalArgumentException("Username already in use");
+                });
 
-            user.setId(UUID.randomUUID().toString());
-            user.setActive(true);
-            user.setPasswordHash(bCryptPasswordEncoder.encode(user.getPasswordHash()));
-        } else {
-            findByIdOrThrowException(user.getId());
-        }
+        user.setId(UUID.randomUUID().toString());
+        user.setActive(true);
+        user.setPasswordHash(bCryptPasswordEncoder.encode(user.getPasswordHash()));
 
         return from(userRepository.save(user));
+    }
+
+    @Override
+    public UserDto update(UserDto userDto) {
+        User user = toUser(userDto);
+        findByIdOrThrowException(user.getId());
+        return from(userRepository.save(user));
+    }
+
+    @Override
+    public void setRoles(String userId, List<Role> roles) {
+        User user = findByIdOrThrowException(userId);
+        user.setRoles(roles);
+        userRepository.save(user);
     }
 
     @Override
