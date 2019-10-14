@@ -7,9 +7,11 @@ import com.ihorpolataiko.springrestsecurity.repository.UserRepository;
 import com.ihorpolataiko.springrestsecurity.transfer.LoginDto;
 import com.ihorpolataiko.springrestsecurity.transfer.TokenDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.UUID;
 
 import static com.ihorpolataiko.springrestsecurity.transfer.TokenDto.from;
@@ -46,5 +48,12 @@ public class LoginServiceImpl implements LoginService {
             throw new IllegalArgumentException("Password is not correct");
         }
         throw new IllegalArgumentException("Credentials are not provided");
+    }
+
+    @Override
+    @Transactional
+    public void logout() {
+        String tokenValue = SecurityContextHolder.getContext().getAuthentication().getName();
+        tokenRepository.deleteByValue(tokenValue);
     }
 }

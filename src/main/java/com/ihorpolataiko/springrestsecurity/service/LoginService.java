@@ -5,4 +5,6 @@ import com.ihorpolataiko.springrestsecurity.transfer.TokenDto;
 
 public interface LoginService {
     TokenDto login(LoginDto loginDto);
+
+    void logout();
 }
