@@ -1,12 +1,14 @@
 package com.ihorpolataiko.springrestsecurity.controller;
 
 import com.ihorpolataiko.springrestsecurity.domain.Role;
+import com.ihorpolataiko.springrestsecurity.domain.User;
 import com.ihorpolataiko.springrestsecurity.service.UserService;
 import com.ihorpolataiko.springrestsecurity.transfer.UserDto;
 import com.ihorpolataiko.springrestsecurity.transfer.validation.ExistingRecord;
 import com.ihorpolataiko.springrestsecurity.transfer.validation.NewRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,10 +43,12 @@ public class UserController {
         return userService.onboard(userDto);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public UserDto update(@Validated(ExistingRecord.class) @PathVariable("id") String id, @RequestBody UserDto userDto) {
-        userDto.setId(id);
+    public UserDto update(@AuthenticationPrincipal User user, @Validated(ExistingRecord.class) @RequestBody UserDto userDto) {
+        userDto.setId(user.getId());
+        userDto.setPassword(user.getPasswordHash());
+        userDto.setRoles(user.getRoles());
         return userService.update(userDto);
     }
 
@@ -52,6 +56,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void setRoles(@PathVariable("id") String id, @RequestBody List<Role> roles) {
         userService.setRoles(id, roles);
+    }
+
+    @GetMapping("/current")
+    public UserDto getCurrent(@AuthenticationPrincipal User user) {
+        return UserDto.from(user);
     }
 
     @DeleteMapping("/{id}")

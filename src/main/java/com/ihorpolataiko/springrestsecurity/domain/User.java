@@ -25,7 +25,7 @@ public class User {
     private String passwordHash;
     private String firstName;
     private String lastName;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private List<Role> roles;
     private boolean active;

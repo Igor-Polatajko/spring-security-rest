@@ -17,12 +17,10 @@ import static com.ihorpolataiko.springrestsecurity.transfer.validation.Messages.
 @Data
 @Builder
 public class UserDto {
-    @Null(groups = {NewRecord.class}, message = REQUIRED_EMPTY)
-    @NotNull(groups = {ExistingRecord.class}, message = REQUIRED_NOT_EMPTY)
     private String id;
     private String username;
     @NotNull(groups = {NewRecord.class}, message = REQUIRED_NOT_EMPTY)
-    @Null(groups = {ExistingRecord.class}, message = REQUIRED_NOT_EMPTY)
+    @Null(groups = {ExistingRecord.class}, message = REQUIRED_EMPTY)
     private String password;
     @NotNull(groups = {NewRecord.class, ExistingRecord.class}, message = REQUIRED_NOT_EMPTY)
     private String firstName;

@@ -2,6 +2,7 @@ package com.ihorpolataiko.springrestsecurity.config;
 
 import com.ihorpolataiko.springrestsecurity.security.TokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -41,6 +42,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/users/**").authenticated()
                 .antMatchers("/login").permitAll();
+    }
+
+    @Bean
+    public FilterRegistrationBean myAuthenticationFilterRegistration(final TokenFilter filter) {
+        final FilterRegistrationBean<TokenFilter> filterRegistrationBean = new FilterRegistrationBean<>();
+        filterRegistrationBean.setFilter(filter);
+        filterRegistrationBean.setEnabled(false);
+        return filterRegistrationBean;
     }
 
 }
