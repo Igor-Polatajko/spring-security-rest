@@ -10,6 +10,7 @@ import com.ihorpolataiko.springrestsecurity.transfer.validation.ExistingRecord;
 import com.ihorpolataiko.springrestsecurity.transfer.validation.NewRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +33,14 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<UserDto> findAll() {
         return userService.findAll();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public UserDto findById(@PathVariable("id") String id) {
         return userService.findById(id);
     }
@@ -60,6 +63,7 @@ public class UserController {
 
     @PostMapping("/{id}/roles")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void setRoles(@PathVariable("id") String id, @RequestBody List<Role> roles) {
         userService.setRoles(id, roles);
     }
@@ -78,6 +82,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void delete(@PathVariable("id") String id) {
         userService.deleteById(id);
     }

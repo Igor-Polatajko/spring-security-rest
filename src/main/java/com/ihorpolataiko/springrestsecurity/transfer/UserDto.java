@@ -9,6 +9,8 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 import static com.ihorpolataiko.springrestsecurity.transfer.validation.Messages.REQUIRED_EMPTY;
@@ -20,6 +22,11 @@ public class UserDto {
     private String id;
     private String username;
     @NotNull(groups = {NewRecord.class}, message = REQUIRED_NOT_EMPTY)
+    @Size(groups = {NewRecord.class}, min = 6, message = "Password must be at least 6 symbols long")
+    @Pattern(groups = {NewRecord.class}, regexp = ".*[A-Za-z]+.*",
+            message = "Pattern must contain at least 1 alphabetical character")
+    @Pattern(groups = {NewRecord.class}, regexp = ".*[0-9]+.*",
+            message = "Pattern must contain at least 1 numeric character")
     @Null(groups = {ExistingRecord.class}, message = REQUIRED_EMPTY)
     private String password;
     @NotNull(groups = {NewRecord.class, ExistingRecord.class}, message = REQUIRED_NOT_EMPTY)
