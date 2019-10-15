@@ -37,7 +37,10 @@ public class TokenAuthentication implements Authentication {
 
     @Override
     public Object getPrincipal() {
-        return ((UserDetailsImpl) userDetails).getUser();
+        if (userDetails != null) {
+            return ((UserDetailsImpl) userDetails).getUser();
+        }
+        return null;
     }
 
     @Override

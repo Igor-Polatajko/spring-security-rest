@@ -5,6 +5,7 @@ import com.ihorpolataiko.springrestsecurity.domain.security.Token;
 import com.ihorpolataiko.springrestsecurity.repository.TokenRepository;
 import com.ihorpolataiko.springrestsecurity.repository.UserRepository;
 import com.ihorpolataiko.springrestsecurity.transfer.LoginDto;
+import com.ihorpolataiko.springrestsecurity.transfer.ResetPasswordDto;
 import com.ihorpolataiko.springrestsecurity.transfer.TokenDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,5 +56,15 @@ public class LoginServiceImpl implements LoginService {
     public void logout() {
         String tokenValue = SecurityContextHolder.getContext().getAuthentication().getName();
         tokenRepository.deleteByValue(tokenValue);
+    }
+
+    @Override
+    public void resetPassword(User user, ResetPasswordDto resetPasswordDto) {
+        if (!bCryptPasswordEncoder.matches(resetPasswordDto.getOldPassword(), user.getPasswordHash())) {
+            throw new IllegalArgumentException("Incorrect old password provided");
+        }
+
+        user.setPasswordHash(bCryptPasswordEncoder.encode(resetPasswordDto.getNewPassword()));
+        userRepository.save(user);
     }
 }

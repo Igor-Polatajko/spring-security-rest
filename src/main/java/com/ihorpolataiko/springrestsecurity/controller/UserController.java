@@ -2,7 +2,9 @@ package com.ihorpolataiko.springrestsecurity.controller;
 
 import com.ihorpolataiko.springrestsecurity.domain.Role;
 import com.ihorpolataiko.springrestsecurity.domain.User;
+import com.ihorpolataiko.springrestsecurity.service.LoginService;
 import com.ihorpolataiko.springrestsecurity.service.UserService;
+import com.ihorpolataiko.springrestsecurity.transfer.ResetPasswordDto;
 import com.ihorpolataiko.springrestsecurity.transfer.UserDto;
 import com.ihorpolataiko.springrestsecurity.transfer.validation.ExistingRecord;
 import com.ihorpolataiko.springrestsecurity.transfer.validation.NewRecord;
@@ -12,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -19,10 +22,12 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
+    private LoginService loginService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, LoginService loginService) {
         this.userService = userService;
+        this.loginService = loginService;
     }
 
     @GetMapping
@@ -45,7 +50,8 @@ public class UserController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public UserDto update(@AuthenticationPrincipal User user, @Validated(ExistingRecord.class) @RequestBody UserDto userDto) {
+    public UserDto update(@AuthenticationPrincipal User user,
+                          @Validated(ExistingRecord.class) @RequestBody UserDto userDto) {
         userDto.setId(user.getId());
         userDto.setPassword(user.getPasswordHash());
         userDto.setRoles(user.getRoles());
@@ -61,6 +67,13 @@ public class UserController {
     @GetMapping("/current")
     public UserDto getCurrent(@AuthenticationPrincipal User user) {
         return UserDto.from(user);
+    }
+
+    @PostMapping("/reset-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resetPassword(@AuthenticationPrincipal User user,
+                              @Validated @RequestBody @NotNull ResetPasswordDto resetPasswordDto) {
+        loginService.resetPassword(user, resetPasswordDto);
     }
 
     @DeleteMapping("/{id}")
