@@ -6,10 +6,7 @@ import com.ihorpolataiko.springrestsecurity.transfer.TokenDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class LoginController {
@@ -21,13 +18,13 @@ public class LoginController {
         this.loginService = loginService;
     }
 
-    @RequestMapping("/login")
+    @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public TokenDto login(@Validated @RequestBody LoginDto loginDto) {
         return loginService.login(loginDto);
     }
 
-    @RequestMapping("/logout")
+    @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout() {
         loginService.logout();
