@@ -2,7 +2,6 @@ package com.ihorpolataiko.springrestsecurity.controller;
 
 import com.ihorpolataiko.springrestsecurity.domain.Role;
 import com.ihorpolataiko.springrestsecurity.domain.User;
-import com.ihorpolataiko.springrestsecurity.service.LoginService;
 import com.ihorpolataiko.springrestsecurity.service.UserService;
 import com.ihorpolataiko.springrestsecurity.transfer.ResetPasswordDto;
 import com.ihorpolataiko.springrestsecurity.transfer.UserDto;
@@ -13,7 +12,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -23,12 +30,10 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
-    private LoginService loginService;
 
     @Autowired
-    public UserController(UserService userService, LoginService loginService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.loginService = loginService;
     }
 
     @GetMapping
@@ -47,18 +52,16 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto onboard(@Validated(NewRecord.class) @RequestBody UserDto userDto) {
-        return userService.onboard(userDto);
+    public UserDto create(@Validated(NewRecord.class) @RequestBody UserDto userDto) {
+        return userService.create(userDto);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public UserDto update(@AuthenticationPrincipal User user,
+    public UserDto update(@AuthenticationPrincipal User loggedInUser,
                           @Validated(ExistingRecord.class) @RequestBody UserDto userDto) {
-        userDto.setId(user.getId());
-        userDto.setPassword(user.getPasswordHash());
-        userDto.setRoles(user.getRoles());
-        return userService.update(userDto);
+
+        return userService.update(loggedInUser, userDto);
     }
 
     @PostMapping("/{id}/roles")
@@ -68,17 +71,19 @@ public class UserController {
         userService.setRoles(id, roles);
     }
 
-    @GetMapping("/current")
-    public UserDto getCurrent(@AuthenticationPrincipal User user) {
-        return UserDto.from(user);
+    @GetMapping("/self")
+    public UserDto getSelf(@AuthenticationPrincipal User user) {
+        return user.toDto();
     }
 
     @PostMapping("/reset-password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void resetPassword(@AuthenticationPrincipal User user,
                               @Validated @RequestBody @NotNull ResetPasswordDto resetPasswordDto) {
-        loginService.resetPassword(user, resetPasswordDto);
+        userService.resetPassword(user, resetPasswordDto);
     }
+
+    // ToDo activate/deactivate
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -86,4 +91,5 @@ public class UserController {
     public void delete(@PathVariable("id") String id) {
         userService.deleteById(id);
     }
+
 }

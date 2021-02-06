@@ -12,8 +12,11 @@ import static com.ihorpolataiko.springrestsecurity.transfer.validation.Messages.
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginDto {
+
     @NotNull(message = REQUIRED_NOT_EMPTY)
     private String username;
+
     @NotNull(message = REQUIRED_NOT_EMPTY)
     private String password;
+
 }

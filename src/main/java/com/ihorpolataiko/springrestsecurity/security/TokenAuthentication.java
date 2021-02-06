@@ -9,7 +9,9 @@ import java.util.Collection;
 public class TokenAuthentication implements Authentication {
 
     private String tokenValue;
+
     private UserDetails userDetails;
+
     private boolean isAuthenticated;
 
     public TokenAuthentication(String tokenValue) {
@@ -27,7 +29,7 @@ public class TokenAuthentication implements Authentication {
 
     @Override
     public Object getCredentials() {
-        return null;
+        return tokenValue;
     }
 
     @Override
@@ -55,6 +57,9 @@ public class TokenAuthentication implements Authentication {
 
     @Override
     public String getName() {
-        return tokenValue;
+        if (userDetails != null) {
+            return userDetails.getUsername();
+        }
+        return null;
     }
 }

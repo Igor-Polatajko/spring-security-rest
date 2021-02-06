@@ -10,6 +10,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ErrorResponse {
-    private String uri;
+
+    private String path;
+
     private List<String> messages;
+
 }

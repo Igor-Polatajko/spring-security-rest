@@ -2,6 +2,7 @@ package com.ihorpolataiko.springrestsecurity.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiKey;
@@ -21,6 +22,7 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .ignoredParameterTypes(AuthenticationPrincipal.class)
                 .securitySchemes(Collections.singletonList(apiKey()))
                 .securityContexts(Collections.singletonList(securityContext()))
                 .select()
@@ -30,12 +32,18 @@ public class SwaggerConfig {
     }
 
     private SecurityContext securityContext() {
-        return SecurityContext.builder().securityReferences(defaultAuth()).forPaths(PathSelectors.regex("/.*")).build();
+        return SecurityContext.builder()
+                .securityReferences(defaultAuth())
+                .forPaths(PathSelectors.regex("/.*"))
+                .build();
     }
 
     private List<SecurityReference> defaultAuth() {
-        final AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+        final AuthorizationScope authorizationScope =
+                new AuthorizationScope("global", "accessEverything");
+
         final AuthorizationScope[] authorizationScopes = new AuthorizationScope[]{authorizationScope};
+
         return Collections.singletonList(new SecurityReference("Bearer", authorizationScopes));
     }
 

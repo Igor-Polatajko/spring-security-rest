@@ -2,7 +2,6 @@ package com.ihorpolataiko.springrestsecurity.config;
 
 import com.ihorpolataiko.springrestsecurity.security.TokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,6 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
@@ -20,12 +21,25 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
     private AuthenticationProvider authenticationProvider;
 
-    @Autowired
     private TokenFilter tokenAuthFilter;
 
+    private AuthenticationEntryPoint authenticationEntryPoint;
+
+    private AccessDeniedHandler accessDeniedHandler;
+
+    @Autowired
+    public SecurityConfig(AuthenticationProvider authenticationProvider,
+                          TokenFilter tokenAuthFilter,
+                          AuthenticationEntryPoint authenticationEntryPoint,
+                          AccessDeniedHandler accessDeniedHandler) {
+
+        this.authenticationProvider = authenticationProvider;
+        this.tokenAuthFilter = tokenAuthFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
+    }
 
     @Bean
     public BCryptPasswordEncoder getPasswordEncoder() {
@@ -44,16 +58,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(authenticationProvider)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/users").permitAll()
-                .antMatchers("/users/**").authenticated()
-                .antMatchers("/login").permitAll();
-    }
-
-    @Bean
-    public FilterRegistrationBean myAuthenticationFilterRegistration(final TokenFilter filter) {
-        final FilterRegistrationBean<TokenFilter> filterRegistrationBean = new FilterRegistrationBean<>();
-        filterRegistrationBean.setFilter(filter);
-        filterRegistrationBean.setEnabled(false);
-        return filterRegistrationBean;
+                .antMatchers("/users/**", "/logout/**").authenticated()
+                .antMatchers("/login").permitAll()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler);
     }
 
 }

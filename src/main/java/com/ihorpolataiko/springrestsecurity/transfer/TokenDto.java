@@ -1,15 +1,16 @@
 package com.ihorpolataiko.springrestsecurity.transfer;
 
-import com.ihorpolataiko.springrestsecurity.domain.security.Token;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class TokenDto {
+
     private String value;
 
-    public static TokenDto from(Token token) {
-        return new TokenDto(token.getValue());
-    }
 }

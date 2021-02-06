@@ -20,13 +20,15 @@ public class TokenProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+
         TokenAuthentication tokenAuthentication = (TokenAuthentication) authentication;
 
-        Token token = tokenRepository.findByValue(tokenAuthentication.getName())
+        Token token = tokenRepository.findByValue((String) tokenAuthentication.getCredentials())
                 .orElseThrow(() -> new IllegalArgumentException("Incorrect auth token provided"));
 
         tokenAuthentication.setAuthenticated(true);
         tokenAuthentication.setUserDetails(new UserDetailsImpl(token.getUser()));
+
         return tokenAuthentication;
     }
 
@@ -34,4 +36,5 @@ public class TokenProvider implements AuthenticationProvider {
     public boolean supports(Class<?> authenticationClass) {
         return TokenAuthentication.class.equals(authenticationClass);
     }
+
 }
