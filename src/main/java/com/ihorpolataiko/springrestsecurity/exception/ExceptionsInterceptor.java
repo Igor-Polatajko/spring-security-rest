@@ -51,4 +51,13 @@ public class ExceptionsInterceptor {
 
         return new ErrorResponse(request.getRequestURI(), messages);
     }
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorResponse illegalArgumentExceptionExceptionHandler(@NonNull HttpServletRequest request,
+                                                                  @NonNull IllegalArgumentException ex) {
+
+        return new ErrorResponse(request.getRequestURI(), Collections.singletonList(ex.getMessage()));
+    }
+
 }

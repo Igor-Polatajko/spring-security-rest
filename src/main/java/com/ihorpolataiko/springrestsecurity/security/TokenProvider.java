@@ -1,7 +1,9 @@
 package com.ihorpolataiko.springrestsecurity.security;
 
 import com.ihorpolataiko.springrestsecurity.domain.security.Token;
+import com.ihorpolataiko.springrestsecurity.exception.IncorrectCredentialsException;
 import com.ihorpolataiko.springrestsecurity.repository.TokenRepository;
+import com.ihorpolataiko.springrestsecurity.service.TokenAsyncService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -13,9 +15,12 @@ public class TokenProvider implements AuthenticationProvider {
 
     private TokenRepository tokenRepository;
 
+    private TokenAsyncService tokenAsyncService;
+
     @Autowired
-    public TokenProvider(TokenRepository tokenRepository) {
+    public TokenProvider(TokenRepository tokenRepository, TokenAsyncService tokenAsyncService) {
         this.tokenRepository = tokenRepository;
+        this.tokenAsyncService = tokenAsyncService;
     }
 
     @Override
@@ -24,7 +29,9 @@ public class TokenProvider implements AuthenticationProvider {
         TokenAuthentication tokenAuthentication = (TokenAuthentication) authentication;
 
         Token token = tokenRepository.findByValue((String) tokenAuthentication.getCredentials())
-                .orElseThrow(() -> new IllegalArgumentException("Incorrect auth token provided"));
+                .orElseThrow(IncorrectCredentialsException::new);
+
+        tokenAsyncService.updateLastActivityTime(token);
 
         tokenAuthentication.setAuthenticated(true);
         tokenAuthentication.setUserDetails(new UserDetailsImpl(token.getUser()));

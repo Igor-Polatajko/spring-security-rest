@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
@@ -47,10 +48,14 @@ public class LoginServiceImpl implements LoginService {
 
         if (bCryptPasswordEncoder.matches(loginDto.getPassword(), user.getPasswordHash())) {
 
+            LocalDateTime now = LocalDateTime.now();
+
             Token token = Token.builder()
                     .id(UUID.randomUUID().toString())
                     .value(UUID.randomUUID().toString())
                     .user(user)
+                    .lastActivityTime(now)
+                    .createdTime(now)
                     .build();
 
             return tokenRepository.save(token).toDto();
@@ -65,6 +70,12 @@ public class LoginServiceImpl implements LoginService {
         String tokenValue = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
         SecurityContextHolder.clearContext();
         tokenRepository.deleteByValue(tokenValue);
+    }
+
+    @Override
+    @Transactional
+    public void logoutGlobal(User loggedInUser) {
+        tokenRepository.deleteByUserId(loggedInUser.getId());
     }
 
 }

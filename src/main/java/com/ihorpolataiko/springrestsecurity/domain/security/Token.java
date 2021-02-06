@@ -15,10 +15,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Token {
@@ -30,6 +31,10 @@ public class Token {
     private String id;
 
     private String value;
+
+    private LocalDateTime lastActivityTime;
+
+    private LocalDateTime createdTime;
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "user_id")

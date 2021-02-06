@@ -17,7 +17,11 @@ public interface UserService {
 
     UserDto update(User loggedInUser, UserDto userDto);
 
-    void setRoles(String userId, List<Role> roles);
+    UserDto setRoles(String userId, List<Role> roles);
+
+    UserDto activate(String id);
+
+    UserDto deactivate(String id);
 
     void deleteById(String id);
 

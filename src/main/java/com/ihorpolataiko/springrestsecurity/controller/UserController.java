@@ -65,10 +65,31 @@ public class UserController {
     }
 
     @PostMapping("/{id}/roles")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public UserDto setRoles(@PathVariable("id") String id, @RequestBody List<Role> roles) {
+        return userService.setRoles(id, roles);
+    }
+
+    @PostMapping("/{id}/activate")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public UserDto activate(@PathVariable("id") String userId) {
+        return userService.activate(userId);
+    }
+
+    @PostMapping("/{id}/deactivate")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public UserDto deactivate(@PathVariable("id") String userId) {
+        return userService.deactivate(userId);
+    }
+
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void setRoles(@PathVariable("id") String id, @RequestBody List<Role> roles) {
-        userService.setRoles(id, roles);
+    public void delete(@PathVariable("id") String id) {
+        userService.deleteById(id);
     }
 
     @GetMapping("/self")
@@ -81,15 +102,6 @@ public class UserController {
     public void resetPassword(@AuthenticationPrincipal User user,
                               @Validated @RequestBody @NotNull ResetPasswordDto resetPasswordDto) {
         userService.resetPassword(user, resetPasswordDto);
-    }
-
-    // ToDo activate/deactivate
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void delete(@PathVariable("id") String id) {
-        userService.deleteById(id);
     }
 
 }

@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void setRoles(String userId, List<Role> roles) {
+    public UserDto setRoles(String userId, List<Role> roles) {
 
         User user = findByIdOrThrowException(userId);
 
@@ -83,7 +83,31 @@ public class UserServiceImpl implements UserService {
                 .roles(roles)
                 .build();
 
-        userRepository.save(updatedUser);
+        return userRepository.save(updatedUser).toDto();
+    }
+
+    @Override
+    public UserDto activate(String id) {
+
+        User user = findByIdOrThrowException(id);
+
+        User updatedUser = user.toBuilder()
+                .active(true)
+                .build();
+
+        return userRepository.save(updatedUser).toDto();
+    }
+
+    @Override
+    public UserDto deactivate(String id) {
+
+        User user = findByIdOrThrowException(id);
+
+        User updatedUser = user.toBuilder()
+                .active(false)
+                .build();
+
+        return userRepository.save(updatedUser).toDto();
     }
 
     @Override

@@ -1,11 +1,12 @@
 package com.ihorpolataiko.springrestsecurity.controller;
 
+import com.ihorpolataiko.springrestsecurity.domain.User;
 import com.ihorpolataiko.springrestsecurity.service.LoginService;
 import com.ihorpolataiko.springrestsecurity.transfer.LoginDto;
 import com.ihorpolataiko.springrestsecurity.transfer.TokenDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,11 +35,10 @@ public class LoginController {
         loginService.logout();
     }
 
-    // ToDo logout from all sessions
     @PostMapping("/logout/global")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void logoutGlobal() {
-        //loginService.logout();
+    public void logoutGlobal(@AuthenticationPrincipal User user) {
+        loginService.logoutGlobal(user);
     }
 
 }
