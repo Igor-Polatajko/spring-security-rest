@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static java.util.Objects.nonNull;
+
 @Component
 public class TokenFilter extends OncePerRequestFilter {
 
@@ -19,8 +21,8 @@ public class TokenFilter extends OncePerRequestFilter {
 
         String authHeaderValue = httpServletRequest.getHeader("Authorization");
 
-        TokenAuthentication tokenAuthentication = new TokenAuthentication(authHeaderValue);
-        if (authHeaderValue != null) {
+        if (nonNull(authHeaderValue)) {
+            TokenAuthentication tokenAuthentication = new TokenAuthentication(authHeaderValue);
             SecurityContextHolder.getContext().setAuthentication(tokenAuthentication);
         }
 

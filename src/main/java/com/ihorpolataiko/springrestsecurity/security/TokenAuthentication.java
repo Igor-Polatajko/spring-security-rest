@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+import static java.util.Objects.isNull;
+
 public class TokenAuthentication implements Authentication {
 
     private String tokenValue;
@@ -39,10 +41,10 @@ public class TokenAuthentication implements Authentication {
 
     @Override
     public Object getPrincipal() {
-        if (userDetails != null) {
-            return ((UserDetailsImpl) userDetails).getUser();
+        if (isNull(userDetails)) {
+            return null;
         }
-        return null;
+        return ((UserDetailsImpl) userDetails).getUser();
     }
 
     @Override
@@ -57,9 +59,9 @@ public class TokenAuthentication implements Authentication {
 
     @Override
     public String getName() {
-        if (userDetails != null) {
-            return userDetails.getUsername();
+        if (isNull(userDetails)) {
+            return null;
         }
-        return null;
+        return userDetails.getUsername();
     }
 }
